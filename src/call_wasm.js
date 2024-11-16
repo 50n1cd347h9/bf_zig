@@ -1,14 +1,5 @@
-// call_wasm.js
 const fs = require("fs");
 const content = fs.readFileSync("./zig-out/bin/bf_zig.wasm");
-// const content = fs.readFileSync("./main.wasm");
-
-//WebAssembly.instantiate(content, { env: { print: (x) => console.log(x) } })
-//.then((result) => {
-//	console.log(result.instance.exports);
-//  // const add = result.instance.exports.add;
-//  // add(1, 2);
-//});
 
 WebAssembly.compile(content)
   .then((module) => {
@@ -20,9 +11,18 @@ WebAssembly.compile(content)
         table: new WebAssembly.Table({ initial: 0, element: "anyfunc" }),
       },
     }).exports;
-	 //  console.log(lib);
-	  console.log(lib.test1()); // 1
-	  console.log(lib.test2(128, 128)); // 256
+
+	  const memory = lib.memory;
+      const memoryView = new Uint8Array(memory.buffer);
+
+	  const input = "Hello Worldhogehoge";
+  	  const { written } = new TextEncoder().encodeInto(input, memoryView);
+
+	  const ret = lib.returnString(0, written);
+
+	  console.log(`ret is ${ret}`);
+	  const outputView = new Uint8Array(memory.buffer, 0, written);
+	  console.log(new TextDecoder().decode(outputView));
   })
   .catch((e) => {
     console.error(e);
