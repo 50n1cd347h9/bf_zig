@@ -1,3 +1,5 @@
 /_build.zig
 /.zig-cache
-/zig-out
+/zig-out/bin/*.wasm
+/zig-out/bin/*.wasm.o
+/zig-out/lib
