@@ -55,7 +55,9 @@ export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
                 INC => bf_memory[ptr] += 1,
                 DEC => bf_memory[ptr] -= 1,
                 OUT => printChar(bf_memory[ptr]),
-                IN => {},
+                IN => {
+                    return 0;
+                },
                 BRACKET_L => {
                     l_bracket_loc = ins_index;
                     // jump to next ']'
@@ -83,7 +85,9 @@ export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
                         continue :interpret;
                     }
                 },
-                else => return 1,
+                else => {
+                    return 0;
+                },
             }
 
             ins_index += 1;
