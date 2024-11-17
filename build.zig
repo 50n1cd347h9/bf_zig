@@ -19,7 +19,6 @@ pub fn build(b: *std.Build) void {
             "-target",
             "wasm32-wasi",
             "-fno-entry",
-            "--export=returnString",
             "--export=bfInterpret",
             "-femit-bin=zig-out/bin/bf_zig.wasm",
         },

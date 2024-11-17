@@ -2,18 +2,11 @@ const std = @import("std");
 
 extern fn print(i32) void;
 extern fn printChar(u8) void;
+extern fn printToOut(u8) void;
 
-export fn returnString(s: [*]u8, num: usize) usize {
-    var bf_memory = [_]u8{0} ** 0x100;
-    @memset(&bf_memory, 0xa);
-
-    s[0] = 'h';
-    return num * 2;
-}
-
-inline fn bfMemoryInit(bf_input: [*]u8, length: usize) []u8 {
+inline fn bfMemory(bf_input: [*]u8, start: usize) []u8 {
     const BF_MEMORY_LEN = 0x100;
-    const memory = bf_input[length .. length + BF_MEMORY_LEN];
+    const memory = bf_input[start .. start + BF_MEMORY_LEN];
     @memset(memory, 0);
     return memory;
 }
@@ -25,9 +18,8 @@ inline fn findRBracket(l_loc: usize, input: []u8) usize {
     return 0xdeadbeef;
 }
 
-// reutn 1 if an error occured
 export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
-    var bf_memory = bfMemoryInit(bf_input, length);
+    var bf_memory = bfMemory(bf_input, length);
     _ = &bf_memory;
 
     // interpret input string;
@@ -54,10 +46,8 @@ export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
                 PTR_DEC => ptr -= 1,
                 INC => bf_memory[ptr] += 1,
                 DEC => bf_memory[ptr] -= 1,
-                OUT => printChar(bf_memory[ptr]),
-                IN => {
-                    return 0;
-                },
+                OUT => printToOut(bf_memory[ptr]),
+                IN => break :interpret,
                 BRACKET_L => {
                     l_bracket_loc = ins_index;
                     // jump to next ']'
@@ -72,7 +62,7 @@ export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
                             bf_input[0..length],
                         );
                         if (r_bracket_loc == 0xdeadbeef)
-                            return 1;
+                            break :interpret;
                         ins_index = r_bracket_loc;
                         continue :interpret;
                     }
@@ -85,9 +75,7 @@ export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
                         continue :interpret;
                     }
                 },
-                else => {
-                    return 0;
-                },
+                else => break :interpret,
             }
 
             ins_index += 1;
