@@ -1,10 +1,19 @@
 const fs = require("fs");
 const content = fs.readFileSync("./zig-out/bin/bf_zig.wasm");
 
+function removeNewlines(str) {
+  return str.replace(/[\r\n]/g, '');
+}
+function removeWhitespace(str) {
+  return str.replace(/\s+/g, '');
+}
+
 async function bfInterpret(bf_input) {
+	bf_input = removeWhitespace(removeNewlines(bf_input));
 	try {
 		const module = await WebAssembly.compile(content);
 		const out_buf = [];
+
 
 		const instance = new WebAssembly.Instance(module, {
 			env: {
@@ -31,40 +40,34 @@ async function bfInterpret(bf_input) {
 	}
 }
 
-const input = "+++++++++[>++++++++>+++++++++++>+++>+<<<<-]>.>++.+++++++..+++.>+++++.<<+++++++++++++++.>.+++.------.--------.>+.>+.";
+var input = 
+`+++++++++[>++++++++>+++++++++++>+++>+<<<<-]>
+	.
+	>++
+	.
+	+++++++
+	.
+	.
+	+++
+	.
+	>+++++
+	.
+	<<+++++++++++++++
+	.
+	>
+	.
+	+++
+	.
+	------
+	.
+	--------
+	.
+	>+
+	.
+	>+
+	.`;
+
 bfInterpret(input).then((out) => {
-	console.log(`out: ${out}`);
+	console.log(`input : ${input}`);
+	console.log(`output: ${out}`);
 });
-
-// function inspectMemory(memory) {
-//   const pageSize = 2 ** 16;
-// 
-//   console.log('pages:', memory.buffer.byteLength / pageSize);
-//   const memoryView = new Uint8Array(memory.buffer);
-//   const used = [];
-//   for (let i = 0; i < memoryView.length; i++) {
-//     if (memoryView[i]) {
-//       const start = i;
-// 
-//       while (true) {
-//         const maxLookForwardBytes = 300;
-//         const bytesLeft = memoryView.length - i;
-//         const lookForwardBytes = Math.min(maxLookForwardBytes, bytesLeft);
-//         const forwardView = new Uint8Array(memory.buffer, i, lookForwardBytes);
-//         if (forwardView.every((byte) => byte === 0)) break;
-// 
-//         i++;
-//       }
-// 
-//       used.push([start, i - start]);
-//     }
-//   }
-//   console.log(
-//     used.map(
-//       ([start, length]) =>
-//         `page:${Math.floor(start / pageSize)} offset:${start % pageSize} bytes:${length}`
-//     ),
-//     '\n'
-//   );
-// }
-

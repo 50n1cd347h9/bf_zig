@@ -11,7 +11,7 @@ inline fn bfMemory(bf_input: [*]u8, start: usize) []u8 {
     return memory;
 }
 
-inline fn findRBracket(l_loc: usize, input: []u8) usize {
+inline fn findBracketR(l_loc: usize, input: []u8) usize {
     const BRACKET_R = ']';
     for (l_loc..input.len) |i|
         if (input[i] == BRACKET_R) return i;
@@ -19,7 +19,7 @@ inline fn findRBracket(l_loc: usize, input: []u8) usize {
 }
 
 export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
-    var bf_memory = bfMemory(bf_input, length);
+    var bf_memory: []u8 = bfMemory(bf_input, length);
     _ = &bf_memory;
 
     // interpret input string;
@@ -56,8 +56,7 @@ export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
                             ins_index = r_bracket_loc;
                             continue :interpret;
                         }
-
-                        r_bracket_loc = findRBracket(
+                        r_bracket_loc = findBracketR(
                             l_bracket_loc,
                             bf_input[0..length],
                         );
