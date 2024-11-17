@@ -1,7 +1,6 @@
 const fs = require("fs");
 const content = fs.readFileSync("./zig-out/bin/bf_zig.wasm");
 
-
 async function bfInterpret(bf_input) {
 	try {
 		const module = await WebAssembly.compile(content);
@@ -36,41 +35,6 @@ const input = "+++++++++[>++++++++>+++++++++++>+++>+<<<<-]>.>++.+++++++..+++.>++
 bfInterpret(input).then((out) => {
 	console.log(`out: ${out}`);
 });
-
-// WebAssembly.compile(content)
-// 	.then((module) => {
-// 		const instance = new WebAssembly.Instance(module, {
-// 			env: {
-// 				print: (x) => console.log(x),
-// 				printChar: (x) => process.stdout.write(String.fromCharCode(x)),
-// 				memoryBase: 0,
-// 				// tableBase: 0,
-// 				// memory: new WebAssembly.Memory({ initial: 256 }),
-// 				// table: new WebAssembly.Table({ initial: 0, element: "anyfunc" }),
-// 			},
-// 		});
-// 		const lib = instance.exports;
-// 
-// 		const memory = lib.memory;
-// 		const memoryView = new Uint8Array(memory.buffer);
-// 
-// 		// const input = "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.+.+.>++++++++++.";
-// 		const input = "+++++++++[>++++++++>+++++++++++>+++>+<<<<-]>.>++.+++++++..+++.>+++++.<<+++++++++++++++.>.+++.------.--------.>+.>+.";
-// 		console.log(`input: ${input}`);
-// 		// copy input to wasm memory
-// 		const { written } = new TextEncoder().encodeInto(input, memoryView);
-// 
-// 		//
-// 		// call bf interpreter
-// 		const ret = lib.bfInterpret(0, written);
-// 
-// 		const outputView = new Uint8Array(memory.buffer, 0, written);
-// 		console.log(`ret is ${ret}`);
-// 	})
-// 	.catch((e) => {
-// 		console.error(e);
-// 	});
-// 
 
 // function inspectMemory(memory) {
 //   const pageSize = 2 ** 16;
