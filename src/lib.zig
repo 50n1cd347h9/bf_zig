@@ -25,7 +25,7 @@ inline fn findRBracket(l_loc: usize, input: []u8) usize {
     return 0xdeadbeef;
 }
 
-// return length of output string;
+// reutn 1 if an error occured
 export fn bfInterpret(bf_input: [*]u8, length: usize) usize {
     var bf_memory = bfMemoryInit(bf_input, length);
     _ = &bf_memory;
