@@ -6,8 +6,7 @@ pub fn build(b: *std.Build) void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     defer {
-        const deinit_status = gpa.deinit();
-        _ = deinit_status;
+        _ = gpa.deinit();
     }
     std.process.execv(
         allocator,
@@ -21,6 +20,7 @@ pub fn build(b: *std.Build) void {
             "wasm32-wasi",
             "-fno-entry",
             "--export=returnString",
+            "--export=bfInterpret",
             "-femit-bin=zig-out/bin/bf_zig.wasm",
         },
     ) catch {};
