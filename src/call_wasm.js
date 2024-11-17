@@ -2,26 +2,28 @@ const fs = require("fs");
 const content = fs.readFileSync("./zig-out/bin/bf_zig.wasm");
 
 function removeNewlines(str) {
-  return str.replace(/[\r\n]/g, '');
+	return str.replace(/[\r\n]/g, '');
 }
 function removeWhitespace(str) {
-  return str.replace(/\s+/g, '');
+	return str.replace(/\s+/g, '');
 }
 
+var instance;
 async function bfInterpret(bf_input) {
 	bf_input = removeWhitespace(removeNewlines(bf_input));
 	try {
 		const module = await WebAssembly.compile(content);
 		const out_buf = [];
 
-
-		const instance = new WebAssembly.Instance(module, {
-			env: {
-				print: (x) => console.log(x),
-				printChar: (x) => process.stdout.write(String.fromCharCode(x)),
-				printToOut: (x) => out_buf.push(x),
-			},
-		});
+		if (instance == undefined) {
+			instance = new WebAssembly.Instance(module, {
+				env: {
+					print: (x) => console.log(x),
+					printChar: (x) => process.stdout.write(String.fromCharCode(x)),
+					printToOut: (x) => out_buf.push(x),
+				},
+			});
+		} 
 
 		const lib = instance.exports;
 		const memory = lib.memory;
